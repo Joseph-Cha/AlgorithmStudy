@@ -1,0 +1,16 @@
+C:\Work\AlgorithmStudy\bin\Debug\net5.0\AlgorithmStudy.exe
+C:\Work\AlgorithmStudy\bin\Debug\net5.0\AlgorithmStudy.deps.json
+C:\Work\AlgorithmStudy\bin\Debug\net5.0\AlgorithmStudy.runtimeconfig.json
+C:\Work\AlgorithmStudy\bin\Debug\net5.0\AlgorithmStudy.runtimeconfig.dev.json
+C:\Work\AlgorithmStudy\bin\Debug\net5.0\AlgorithmStudy.dll
+C:\Work\AlgorithmStudy\bin\Debug\net5.0\ref\AlgorithmStudy.dll
+C:\Work\AlgorithmStudy\bin\Debug\net5.0\AlgorithmStudy.pdb
+C:\Work\AlgorithmStudy\obj\Debug\net5.0\AlgorithmStudy.csprojAssemblyReference.cache
+C:\Work\AlgorithmStudy\obj\Debug\net5.0\AlgorithmStudy.GeneratedMSBuildEditorConfig.editorconfig
+C:\Work\AlgorithmStudy\obj\Debug\net5.0\AlgorithmStudy.AssemblyInfoInputs.cache
+C:\Work\AlgorithmStudy\obj\Debug\net5.0\AlgorithmStudy.AssemblyInfo.cs
+C:\Work\AlgorithmStudy\obj\Debug\net5.0\AlgorithmStudy.csproj.CoreCompileInputs.cache
+C:\Work\AlgorithmStudy\obj\Debug\net5.0\AlgorithmStudy.dll
+C:\Work\AlgorithmStudy\obj\Debug\net5.0\ref\AlgorithmStudy.dll
+C:\Work\AlgorithmStudy\obj\Debug\net5.0\AlgorithmStudy.pdb
+C:\Work\AlgorithmStudy\obj\Debug\net5.0\AlgorithmStudy.genruntimeconfig.cache
