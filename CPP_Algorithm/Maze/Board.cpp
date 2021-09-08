@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Board.h"
 #include "ConsoleHelper.h"
+#include "Player.h"
 
 const char* TILE = "■";
 
@@ -14,9 +15,10 @@ Board::~Board()
 
 }
 
-void Board::Init(int32 size)
+void Board::Init(int32 size, Player* player)
 {
     _size = size;
+    _player = player;
     GenerateMap();
 
 }
@@ -26,12 +28,12 @@ void Board::Render()
     ConsoleHelper::SetCursorPosition(0, 0);
     ConsoleHelper::ShowConsoleCursor(false);
 
-    for (int32 y = 0; y < 25; y++)
+    for (int32 y = 0; y < _size; y++)
     {
-        for (int32 x = 0; x < 25; x++)
+        for (int32 x = 0; x < _size; x++)
         {
             // 벽은 빨강, 빈공간 초록
-            ConsoleColor color = GetTileColor(Pos{ y, x });
+            ConsoleColor color = GetTileColor( Pos{ y, x } );
             ConsoleHelper::SetCursorColor(color);
             cout << TILE;
         }
@@ -40,7 +42,7 @@ void Board::Render()
 }
 
 // Binary Tree 미로 생성 알고리즘
-// - Maze For Programmers
+// - Maze For Programmers 에서 나온 알고리즘
 void Board::GenerateMap()
 {
     for (int32 y = 0; y < _size; y++)
@@ -58,6 +60,49 @@ void Board::GenerateMap()
             }
         }
     }
+
+    // 랜덤으로 우측 혹은 아래로 길을 뚫는 작업
+    for (int32 y = 0; y < _size; y++)
+    {
+        for (int32 x = 0; x < _size; x++)
+        {
+            // 초록색일 때만 실행 => 벽일 때는 실행 x
+            if (x % 2 == 0 || y % 2 == 0)
+                continue;
+
+            // 우측 가장 마지막과 아래측 가장 마지막 쪽은 안뚫어주도록
+            if (y == _size - 2 && x == _size - 2)
+                continue;
+
+            // 가로행에서 가장 마지막 벽면이 뚫리는 것을 방지하기 위함
+            if (y == _size - 2)
+            {
+                // 무조건 오른쪽으로 이동
+                _tile[y][x + 1] = TileTpye::EMPTY;
+                continue;
+            }
+
+            // 세로열에서 가장 마지막 벽면이 뚫리는 것을 방지하기 위함
+            if (x == _size - 2)
+            {
+                // 무조껀 아래로 이동
+                _tile[y + 1][x] = TileTpye::EMPTY;
+                continue;
+            }
+
+            const int32 randValue = ::rand() % 2;
+            if (randValue == 0)
+            {
+                // 우측으로 이동
+                _tile[y][x + 1] = TileTpye::EMPTY;
+            }
+            else
+            {
+                // 아래로 이동
+                _tile[y + 1][x] = TileTpye::EMPTY;
+            }
+        }
+    }
 }
 
 TileTpye Board::GetTileType(Pos pos)
@@ -71,6 +116,12 @@ TileTpye Board::GetTileType(Pos pos)
 
 ConsoleColor Board::GetTileColor(Pos pos)
 {
+    if (_player && _player->GetPos() == pos)
+        return ConsoleColor::YELLOW;
+
+    if (GetExitPos() == pos)
+        return ConsoleColor::BLUE;
+
     TileTpye tileType = GetTileType(pos);
     switch (tileType)
     {
