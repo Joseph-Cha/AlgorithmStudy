@@ -39,16 +39,16 @@ void Player::Init(Board* board)
             _path.push_back(pos);
         }
         // 2. 현재 바라보는 방향을 기준으로 전진할 수 있는지 확인
-        else if(CanGo(pos + front[_dir]))
+        else if (CanGo(pos + front[_dir]))
         {
-             // 앞으로 한 보 전진
+            // 앞으로 한 보 전진
             pos += front[_dir];
             _path.push_back(pos);
         }
         else
         {
             // 왼쪽 방향으로 90도 회전
-            _dir = (_dir + 1) % DIR_DOWN;
+            _dir = (_dir + 1) % DIR_COUNT;
             /*
             switch (_dir)
             {
@@ -91,6 +91,6 @@ void Player::Update(uint64 deltaTick)
 
 bool Player::CanGo(Pos pos)
 {
-    TileTpye tileType = _board->GetTileType(pos);
-    return tileType == TileTpye::EMPTY;
+    TileType tileType = _board->GetTileType(pos);
+    return tileType == TileType::EMPTY;
 }

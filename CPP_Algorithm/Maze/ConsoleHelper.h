@@ -19,4 +19,3 @@ public:
     static void SetCursorColor(ConsoleColor color);
     static void ShowConsoleCursor(bool flag); // 커서 show 여부
 };
-

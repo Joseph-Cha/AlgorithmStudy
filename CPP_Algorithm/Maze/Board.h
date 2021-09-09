@@ -8,7 +8,7 @@ enum
     BOARD_MAX_SIZE = 100
 };
 
-enum class TileTpye
+enum class TileType
 {
     // 아무것도 아님
     NONE = 0,
@@ -28,7 +28,7 @@ public:
     void            Render();
 
     void            GenerateMap();
-    TileTpye        GetTileType(Pos pos);
+    TileType        GetTileType(Pos pos);
     ConsoleColor    GetTileColor(Pos pos);
 
     // 시작점
@@ -36,9 +36,8 @@ public:
     // 출구
     Pos             GetExitPos() { return Pos{ _size - 2, _size - 2 }; }
 
-private:    
-    TileTpye        _tile[BOARD_MAX_SIZE][BOARD_MAX_SIZE] = {};
+private:
+    TileType        _tile[BOARD_MAX_SIZE][BOARD_MAX_SIZE] = {};
     int32           _size = 0;
-    Player*         _player = nullptr;
+    Player* _player = nullptr;
 };
-

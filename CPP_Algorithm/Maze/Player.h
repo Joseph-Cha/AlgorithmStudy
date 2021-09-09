@@ -4,7 +4,7 @@ class Board;
 
 class Player
 {
-    enum 
+    enum
     {
         MOVE_TICK = 100
     };
@@ -19,10 +19,10 @@ public:
 
     bool        CanGo(Pos pos);
 
-private: 
+private:
     Pos         _pos = {};
     int32       _dir = DIR_UP;
-    Board*      _board = nullptr;
+    Board* _board = nullptr;
 
     // 내가 지금까지 가야하는 길을 저장
     vector<Pos> _path;
@@ -31,4 +31,3 @@ private:
     uint32       _pathIndex = 0;
     uint64      _sumTick = 0;
 };
-
