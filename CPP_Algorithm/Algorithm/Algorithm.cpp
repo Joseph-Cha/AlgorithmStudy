@@ -2,58 +2,133 @@
 #include <vector>
 #include <list>
 #include <stack>
+#include <queue>
 using namespace std;
 
-// Stack (LIFO Last In First Out 후입 선출)
-// 되돌리기 (Ctrl + Z) => 가장 나중에 작업한 것부터 꺼내서 처리
+// Queue (FIFO First In First Out 선입 선출)
 
+// front << [1][2][3][4] << rear(back)
+// 대기열
 
-// 배열, 연결 리스트 두가지 방법으로 모두 만들 수 있다.
-// stack은 결국 가장 마지막 위치에 데이터를 넣고 빼는 역할만 하면 되기 때문에 ]
-// 배열이든 연결 리스트든 모두 사용이 가능하다.
-template<typename T, typename Container = vector<T>>
-class Stack
+// [][][][front][][][back][][][][][][][]
+// 데이터의 시작 위치와 끝 위치를 유동적으로 변경해서 데이터의 범위를 결정하는 방법
+// [][][][back][][][front][][][][][][][]
+// 끝 위치를 다시 앞으로 보내서 순환이 되는 구조로 만들고 여기서 데이터의 범위는 
+// front 뒤에서부터 back의 앞까지이다.
+template<typename T>
+class ArrayQueue
+{
+public:
+	ArrayQueue()
+	{
+		//_container.resize(100);
+	}
+
+	void push(const T& value)
+	{
+		// TODO : 다 찼는지 체크
+		if (_size == _container.size())
+		{
+			// 증설
+			int newSize = max(1, _size * 2);
+			vector<T> newData;
+			newData.resize(newSize);
+
+			// 데이터 복사
+			for (int i = 0; i < _size; i++)
+			{
+				int index = (_front + i) % _container.size();
+				newData[i] = _container[index];
+			}
+			// 데이터 교체
+			_container.swap(newData);
+			_front = 0;
+			_back = _size;
+		}
+
+		_container[_back] = value;
+		// 뒤로 한칸 이동 & back의 범위가 초과될 수 있기 때문에 나머지 연산자를 활용
+		// 해당 범위 안에서 반복될 수 있도록 해주는 테크닉
+		_back = (_back + 1) % _container.size();
+
+		// 참고
+		// _container.size : 할당 받은 ArrrayQueue의 범위
+		// _size : 실제 데이터의 갯수
+		_size++;
+	}
+
+	void pop()
+	{
+		_front = (_front + 1) % _container.size();
+		_size--;
+	}
+
+	T& front()
+	{
+		// 데이터가 있는지 여부는 일단 스킵
+		return _container[_front];
+	}
+
+	bool empty() { return _size == 0; }
+	int size() { return _size; }
+private:
+	vector<T> _container;
+
+	int _front = 0;
+	int _back = 0;
+	int _size = 0;
+};
+
+// [ ][ ][ ][ ][ ]
+template<typename T>
+class ListQueue
 {
 public:
 	void push(const T& value)
 	{
 		_container.push_back(value);
 	}
+
 	void pop()
 	{
-		_container.pop_back();
+		// if _container == vector
+		// 아래 방법이 가능은 하지만 성능이 좋지는 못한다.
+		// 가장 앞에 있는 값을 삭제하고 뒤의 모든 값을 앞으로 당기기 위해 복사를 해야하기 때문, O(N))
+		//_container.erase(_container.begin());
+
+		// if _container == list
+		// container가 list일 경우 중간 산입 삭제가 간단하기 때문에 여기서는 조금 더 좋다.
+		_container.pop_front();
+
+		// if _container == deque
+		// deque도 pop_front를 지원하기 때문에 좋다.
+		//_container.pop_front();
 	}
-	T& top()
+
+	T& front()
 	{
-		// vector의 가장 마지막에 있는 데이터의 reference를 뱉어냄
-		return _container.back();
+		return _container.front();
 	}
+
 	bool empty() { return _container.empty(); }
 	int size() { return _container.size(); }
 private:
-	//vector<T> _container;
-	//list<T> _container;
-	Container _container;
+	deque<T> _container;
 };
 
 int main()
 {
-	Stack<int, list<int>> s;
+	ArrayQueue<int> q;
 
-	// 산입
-	s.push(1);
-	s.push(2);
-	s.push(3);
-
-	while (s.empty() == false)
+	for (int i = 0; i < 100; i++)
 	{
-		// 최상위 원소
-		int data = s.top();
-
-		// 최상위 원소 삭제
-		s.pop();
-		cout << data << endl;
+		q.push(i);
 	}
-
-	int size = s.size();
+	while (q.empty() == false)
+	{
+		int value = q.front();
+		q.pop();
+		cout << value << endl;
+	}
+	int size = q.size();
 }
