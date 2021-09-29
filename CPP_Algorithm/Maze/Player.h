@@ -22,12 +22,12 @@ public:
 private:
     Pos         _pos = {};
     int32       _dir = DIR_UP;
-    Board* _board = nullptr;
+    Board*      _board = nullptr;
 
     // 내가 지금까지 가야하는 길을 저장
     vector<Pos> _path;
 
     // 내가 현재 경로를 기준으로 어디까지 이동했는지 추적
-    uint32       _pathIndex = 0;
+    uint32      _pathIndex = 0;
     uint64      _sumTick = 0;
 };

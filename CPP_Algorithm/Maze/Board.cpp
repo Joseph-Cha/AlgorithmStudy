@@ -20,7 +20,6 @@ void Board::Init(int32 size, Player* player)
     _size = size;
     _player = player;
     GenerateMap();
-
 }
 
 void Board::Render()
@@ -66,7 +65,7 @@ void Board::GenerateMap()
     {
         for (int32 x = 0; x < _size; x++)
         {
-            // 초록색일 때만 실행 => 벽일 때는 실행 x
+            // 초록색일 때(Empty)만 실행 => 벽일 때는 실행 x
             if (x % 2 == 0 || y % 2 == 0)
                 continue;
 

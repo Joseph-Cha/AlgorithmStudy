@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Player.h"
 #include "Board.h"
+#include <stack>
 
 void Player::Init(Board* board)
 {
@@ -19,10 +20,10 @@ void Player::Init(Board* board)
     Pos front[4] =
     {
         //     y, x
-        Pos { -1, 0 },      // UP
-        Pos { 0, -1 },      // LEFT
-        Pos { 1, 0 },       // DOWN
-        Pos { 0, 1 }        // RIGHT
+        Pos { -1, 0 },      // UP       0
+        Pos { 0, -1 },      // LEFT     1
+        Pos { 1, 0 },       // DOWN     2
+        Pos { 0, 1 }        // RIGHT    3
     };
 
     while (pos != dest)
@@ -49,27 +50,35 @@ void Player::Init(Board* board)
         {
             // 왼쪽 방향으로 90도 회전
             _dir = (_dir + 1) % DIR_COUNT;
-            /*
-            switch (_dir)
-            {
-            case DIR_UP:
-                _dir = DIR_LEFT;
-                break;
-            case DIR_LEFT:
-                _dir = DIR_DOWN;
-                break;
-            case DIR_DOWN:
-                _dir = DIR_RIGHT;
-                break;
-            case DIR_RIGHT:
-                _dir = DIR_UP;
-                break;
-            default:
-                break;
-            }
-            */
         }
     }
+
+    stack<Pos> s;
+    // 걸어온 길을 복귀 
+    for (int i = 0; i < _path.size() - 1; i++)
+    {
+        // s.empty() == false => 이전에 걸어온 길이 있다
+        // s.top() == _path[i + 1] => 최상위 원소를 체크해서 걔가 다음에 가야하는 길과 일치하는지 체크
+        // 조건 만족 => 되돌아 가는 중이다 => pop으로 해당 길을 제거
+        if (s.empty() == false && s.top() == _path[i + 1])
+            s.pop();
+        else
+            s.push(_path[i]);
+    }
+
+    // 목적지 도착 => 목적지 좌표를 가장 마지막에 넣어줌
+    if (_path.empty() == false)
+        s.push(_path.back());
+
+    // stack이라 거꾸로 나오기 때문에 다시 vector에 넣어줌
+    vector<Pos> path;
+    while (s.empty() == false)
+    {
+        path.push_back(s.top());
+        s.pop();
+    }
+    std::reverse(path.begin(), path.end());
+    _path = path;
 }
 
 void Player::Update(uint64 deltaTick)

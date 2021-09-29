@@ -39,5 +39,5 @@ public:
 private:
     TileType        _tile[BOARD_MAX_SIZE][BOARD_MAX_SIZE] = {};
     int32           _size = 0;
-    Player* _player = nullptr;
+    Player*         _player = nullptr;
 };
