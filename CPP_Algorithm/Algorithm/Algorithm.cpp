@@ -5,137 +5,93 @@
 #include <queue>
 using namespace std;
 
-void CreateGraph_1()
+// DFS (Depth First Search) 깊이 우선 탐색
+// BFS (Breadth First Search) 너비 우선 탐색
+
+struct Vertex
 {
-	struct Vertex
-	{
-		// 간선 => Vertex를 연결하는 선
-		vector<Vertex*> edges;
+	// int data
+};
 
+
+// 정점 목록
+vector<Vertex> vertices;
+// 인접 목록
+vector<vector<int>> adjacent;
+
+// 방문했는지 여부를 체크 => 순환 반복 방지
+vector<bool> visited;
+
+void CreateGraph()
+{
+	vertices.reserve(6);
+	adjacent = vector<vector<int>>(6);
+
+	// 인접 리스트
+	//adjacent[0].push_back(1);
+	//adjacent[0].push_back(3);
+	//adjacent[1].push_back(0);
+	//adjacent[1].push_back(2);
+	//adjacent[1].push_back(3);
+	//adjacent[3].push_back(4);
+	//adjacent[5].push_back(4);
+
+	// 인접 행렬
+	adjacent = vector<vector<int>>
+	{
+		{ 0, 1, 0, 1, 0, 0},
+		{ 1, 0, 1, 1, 0, 0},
+		{ 0, 0, 0, 0, 0, 0},
+		{ 0, 0, 0, 0, 1, 0},
+		{ 0, 0, 0, 0, 0, 0},
+		{ 0, 0, 0, 0, 1, 0},
 	};
-
-	vector<Vertex> v;
-	v.resize(6);
-
-	v[0].edges.push_back(&v[1]);
-	v[0].edges.push_back(&v[3]);
-	v[1].edges.push_back(&v[0]);
-	v[1].edges.push_back(&v[2]);
-	v[1].edges.push_back(&v[3]);
-	v[3].edges.push_back(&v[4]);
-	v[5].edges.push_back(&v[4]);
-
-	// Q) 0번과 3번 정점이 연결되어 있나요?
-	bool connected = false;
-	for (Vertex* edge : v[0].edges)
-	{
-		if (edge == &v[3])
-		{
-			connected = true;
-			break;
-		}
-	}
-
 }
 
-void CreateGraph_2()
+// DFS
+void Dfs(int here)
 {
-    struct Vertex
-    {
-		// int data;
-    };
+	// 방문!
+	visited[here] = true;
+	cout << "Visited : " << here << endl;
 
-	// 연결된 목록을 따로 관리
-	// adjacent[n] -> n번째 정점과 연결된 정점 목록
-	vector<vector<int>> adjacent(6);
-	adjacent[0] = { 1, 3 }; 
-	adjacent[1] = { 0, 2, 3 };
-	adjacent[3] = { 4 };
-	adjacent[5] = { 4 };
+	// 인접 리스트 version
+	// 모든 인접 정점을 순회한다
+	//for (int i = 0; i < adjacent[here].size(); i++)
+	//{
+	//	// 인접한 곳이 어디인지 추출 
+	//	int there = adjacent[here][i];
+	//	
+	//	if (visited[there] == false)
+	//		Dfs(there);
+	//}
 
-	// 정점이 100개
-	// - 지하철 노선도 -> 서로 드문 드문 연결 (양옆, 환승역이라면 좀 더 ++)
-	// - 페이스북 친구 -> 서로 빽빽하게 연결
-	// 단점 : 서치를 할 때 100번을 돌면서 찾아야 한다.
-	// 장점 : 드문 드문 연결이 되어 있다면 괜찮다.
-
-    // Q) 0번과 3번 정점이 연결되어 있나요?
-    bool connected = false;
-    for (int vertex : adjacent[0])
-    {
-        if (vertex == 3)
-        {
-            connected = true;
-            break;
-        }
-    }
-
-	// STL
-	vector<int>& adj = adjacent[0];
-	bool connected2 = std::find(adj.begin(), adj.end(), 3) != adj.end();
-}
-
-void CreateGraph_3()
-{
-	struct Vertex
+	// 행렬 리스트 version
+	// 
+	for (int there = 0; there < 6; there++)
 	{
-		// int data;
-	};
-
-	// 연결된 목록을 따로 관리
-	// 행렬을 통해 연결된 여부를 체크
-	// [X][0][X][0][X][X]
-	// [0][X][0][0][X][X]
-	// [X][X][X][X][X][X]
-	// [X][X][X][X][0][X]
-	// [X][X][X][X][X][X]
-	// [X][X][X][X][0][X]
-	
-	// 읽는 방법 : adjacent[from][to]
-	// 행렬을 이용한 그래프 표현(2차원 배열)
-	// 메모리 소모가 심하지만, 빠른 접근이 가능하다.
-	// (간선이 많은 경우 이점이 있다)
-	// 메모리 소모가 있지만 성능적인 측면 때문에 아래 방법을 사용한다.
-	vector<vector<bool>> adjacent(6, vector<bool>(6, false));
-	adjacent[0][1] = true;
-	adjacent[0][3] = true;
-	adjacent[1][0] = true;
-	adjacent[1][2] = true;
-	adjacent[1][3] = true;
-	adjacent[3][4] = true;
-	adjacent[5][4] = true;
-
-	// Q) 0번과 3번 정점이 연결되어 있나요?
-	bool connected = adjacent[0][3];
-
-	// 가중치 여부도 추가
-	vector<vector<int>> adjacent2 =
-	{
-		// -1 : 연결되지 않은 상태
-		// n : 연결되어 있고 가중치가 n만큼 있다.
-		vector<int> { -1, 15, -1, 35, -1, -1},
-		vector<int> { 15, -1, +5, 10, -1, -1},
-		vector<int> { -1, -1, -1, -1, -1, -1},
-		vector<int> { -1, -1, -1, -1, +5, -1},
-		vector<int> { -1, -1, -1, -1, -1, -1},
-		vector<int> { -1, -1, -1, -1, +5, -1},
-	};
-
-	if (adjacent2[0][3] > -1)
-	{
-
-	}
-	else
-	{
-
+		// 현재 위치에서 가려는 위치가 없다면 
+		if (adjacent[here][there] == 0)
+			continue;
+		// 아직 방문하지 않은 곳이 있다면 방문
+		if (visited[there] == false)
+			Dfs(there);
 	}
 }
 
-// 가중치가 있는 그래프
+void DfsAll()
+{
+	visited = vector<bool>(6, false);
+
+	for (int i = 0; i < 6; i++)
+		if (visited[i] == false)
+			Dfs(i);
+}
 
 int main()
 {
-	CreateGraph_1();
-	CreateGraph_2();
-	CreateGraph_3();
+	CreateGraph();
+	//Dfs(0);
+
+	DfsAll();
 }
