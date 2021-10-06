@@ -5,130 +5,137 @@
 #include <queue>
 using namespace std;
 
-// Queue (FIFO First In First Out 선입 선출)
-
-// front << [1][2][3][4] << rear(back)
-// 대기열
-
-// [][][][front][][][back][][][][][][][]
-// 데이터의 시작 위치와 끝 위치를 유동적으로 변경해서 데이터의 범위를 결정하는 방법
-// [][][][back][][][front][][][][][][][]
-// 끝 위치를 다시 앞으로 보내서 순환이 되는 구조로 만들고 여기서 데이터의 범위는 
-// front 뒤에서부터 back의 앞까지이다.
-template<typename T>
-class ArrayQueue
+void CreateGraph_1()
 {
-public:
-	ArrayQueue()
+	struct Vertex
 	{
-		//_container.resize(100);
-	}
+		// 간선 => Vertex를 연결하는 선
+		vector<Vertex*> edges;
 
-	void push(const T& value)
+	};
+
+	vector<Vertex> v;
+	v.resize(6);
+
+	v[0].edges.push_back(&v[1]);
+	v[0].edges.push_back(&v[3]);
+	v[1].edges.push_back(&v[0]);
+	v[1].edges.push_back(&v[2]);
+	v[1].edges.push_back(&v[3]);
+	v[3].edges.push_back(&v[4]);
+	v[5].edges.push_back(&v[4]);
+
+	// Q) 0번과 3번 정점이 연결되어 있나요?
+	bool connected = false;
+	for (Vertex* edge : v[0].edges)
 	{
-		// TODO : 다 찼는지 체크
-		if (_size == _container.size())
+		if (edge == &v[3])
 		{
-			// 증설
-			int newSize = max(1, _size * 2);
-			vector<T> newData;
-			newData.resize(newSize);
-
-			// 데이터 복사
-			for (int i = 0; i < _size; i++)
-			{
-				int index = (_front + i) % _container.size();
-				newData[i] = _container[index];
-			}
-			// 데이터 교체
-			_container.swap(newData);
-			_front = 0;
-			_back = _size;
+			connected = true;
+			break;
 		}
-
-		_container[_back] = value;
-		// 뒤로 한칸 이동 & back의 범위가 초과될 수 있기 때문에 나머지 연산자를 활용
-		// 해당 범위 안에서 반복될 수 있도록 해주는 테크닉
-		_back = (_back + 1) % _container.size();
-
-		// 참고
-		// _container.size : 할당 받은 ArrrayQueue의 범위
-		// _size : 실제 데이터의 갯수
-		_size++;
 	}
 
-	void pop()
-	{
-		_front = (_front + 1) % _container.size();
-		_size--;
-	}
+}
 
-	T& front()
-	{
-		// 데이터가 있는지 여부는 일단 스킵
-		return _container[_front];
-	}
-
-	bool empty() { return _size == 0; }
-	int size() { return _size; }
-private:
-	vector<T> _container;
-
-	int _front = 0;
-	int _back = 0;
-	int _size = 0;
-};
-
-// [ ][ ][ ][ ][ ]
-template<typename T>
-class ListQueue
+void CreateGraph_2()
 {
-public:
-	void push(const T& value)
+    struct Vertex
+    {
+		// int data;
+    };
+
+	// 연결된 목록을 따로 관리
+	// adjacent[n] -> n번째 정점과 연결된 정점 목록
+	vector<vector<int>> adjacent(6);
+	adjacent[0] = { 1, 3 }; 
+	adjacent[1] = { 0, 2, 3 };
+	adjacent[3] = { 4 };
+	adjacent[5] = { 4 };
+
+	// 정점이 100개
+	// - 지하철 노선도 -> 서로 드문 드문 연결 (양옆, 환승역이라면 좀 더 ++)
+	// - 페이스북 친구 -> 서로 빽빽하게 연결
+	// 단점 : 서치를 할 때 100번을 돌면서 찾아야 한다.
+	// 장점 : 드문 드문 연결이 되어 있다면 괜찮다.
+
+    // Q) 0번과 3번 정점이 연결되어 있나요?
+    bool connected = false;
+    for (int vertex : adjacent[0])
+    {
+        if (vertex == 3)
+        {
+            connected = true;
+            break;
+        }
+    }
+
+	// STL
+	vector<int>& adj = adjacent[0];
+	bool connected2 = std::find(adj.begin(), adj.end(), 3) != adj.end();
+}
+
+void CreateGraph_3()
+{
+	struct Vertex
 	{
-		_container.push_back(value);
-	}
+		// int data;
+	};
 
-	void pop()
+	// 연결된 목록을 따로 관리
+	// 행렬을 통해 연결된 여부를 체크
+	// [X][0][X][0][X][X]
+	// [0][X][0][0][X][X]
+	// [X][X][X][X][X][X]
+	// [X][X][X][X][0][X]
+	// [X][X][X][X][X][X]
+	// [X][X][X][X][0][X]
+	
+	// 읽는 방법 : adjacent[from][to]
+	// 행렬을 이용한 그래프 표현(2차원 배열)
+	// 메모리 소모가 심하지만, 빠른 접근이 가능하다.
+	// (간선이 많은 경우 이점이 있다)
+	// 메모리 소모가 있지만 성능적인 측면 때문에 아래 방법을 사용한다.
+	vector<vector<bool>> adjacent(6, vector<bool>(6, false));
+	adjacent[0][1] = true;
+	adjacent[0][3] = true;
+	adjacent[1][0] = true;
+	adjacent[1][2] = true;
+	adjacent[1][3] = true;
+	adjacent[3][4] = true;
+	adjacent[5][4] = true;
+
+	// Q) 0번과 3번 정점이 연결되어 있나요?
+	bool connected = adjacent[0][3];
+
+	// 가중치 여부도 추가
+	vector<vector<int>> adjacent2 =
 	{
-		// if _container == vector
-		// 아래 방법이 가능은 하지만 성능이 좋지는 못한다.
-		// 가장 앞에 있는 값을 삭제하고 뒤의 모든 값을 앞으로 당기기 위해 복사를 해야하기 때문, O(N))
-		//_container.erase(_container.begin());
+		// -1 : 연결되지 않은 상태
+		// n : 연결되어 있고 가중치가 n만큼 있다.
+		vector<int> { -1, 15, -1, 35, -1, -1},
+		vector<int> { 15, -1, +5, 10, -1, -1},
+		vector<int> { -1, -1, -1, -1, -1, -1},
+		vector<int> { -1, -1, -1, -1, +5, -1},
+		vector<int> { -1, -1, -1, -1, -1, -1},
+		vector<int> { -1, -1, -1, -1, +5, -1},
+	};
 
-		// if _container == list
-		// container가 list일 경우 중간 산입 삭제가 간단하기 때문에 여기서는 조금 더 좋다.
-		_container.pop_front();
-
-		// if _container == deque
-		// deque도 pop_front를 지원하기 때문에 좋다.
-		//_container.pop_front();
-	}
-
-	T& front()
+	if (adjacent2[0][3] > -1)
 	{
-		return _container.front();
-	}
 
-	bool empty() { return _container.empty(); }
-	int size() { return _container.size(); }
-private:
-	deque<T> _container;
-};
+	}
+	else
+	{
+
+	}
+}
+
+// 가중치가 있는 그래프
 
 int main()
 {
-	ArrayQueue<int> q;
-
-	for (int i = 0; i < 100; i++)
-	{
-		q.push(i);
-	}
-	while (q.empty() == false)
-	{
-		int value = q.front();
-		q.pop();
-		cout << value << endl;
-	}
-	int size = q.size();
+	CreateGraph_1();
+	CreateGraph_2();
+	CreateGraph_3();
 }
