@@ -12,7 +12,7 @@ struct Vertex
 {
 	// int data
 };
-
+ 
 
 // 정점 목록
 vector<Vertex> vertices;
@@ -20,7 +20,7 @@ vector<Vertex> vertices;
 vector<vector<int>> adjacent;
 
 // 방문했는지 여부를 체크 => 순환 반복 방지
-vector<bool> visited;
+vector<bool> discovered;
 
 void CreateGraph()
 {
@@ -28,70 +28,84 @@ void CreateGraph()
 	adjacent = vector<vector<int>>(6);
 
 	// 인접 리스트
-	//adjacent[0].push_back(1);
-	//adjacent[0].push_back(3);
-	//adjacent[1].push_back(0);
-	//adjacent[1].push_back(2);
-	//adjacent[1].push_back(3);
-	//adjacent[3].push_back(4);
-	//adjacent[5].push_back(4);
+	adjacent[0].push_back(1);
+	adjacent[0].push_back(3);
+	adjacent[1].push_back(0);
+	adjacent[1].push_back(2);
+	adjacent[1].push_back(3);
+	adjacent[3].push_back(4);
+	adjacent[5].push_back(4);
 
 	// 인접 행렬
-	adjacent = vector<vector<int>>
-	{
-		{ 0, 1, 0, 1, 0, 0},
-		{ 1, 0, 1, 1, 0, 0},
-		{ 0, 0, 0, 0, 0, 0},
-		{ 0, 0, 0, 0, 1, 0},
-		{ 0, 0, 0, 0, 0, 0},
-		{ 0, 0, 0, 0, 1, 0},
-	};
-}
-
-// DFS
-void Dfs(int here)
-{
-	// 방문!
-	visited[here] = true;
-	cout << "Visited : " << here << endl;
-
-	// 인접 리스트 version
-	// 모든 인접 정점을 순회한다
-	//for (int i = 0; i < adjacent[here].size(); i++)
+	//adjacent = vector<vector<int>>
 	//{
-	//	// 인접한 곳이 어디인지 추출 
-	//	int there = adjacent[here][i];
-	//	
-	//	if (visited[there] == false)
-	//		Dfs(there);
-	//}
-
-	// 행렬 리스트 version
-	// 
-	for (int there = 0; there < 6; there++)
-	{
-		// 현재 위치에서 가려는 위치가 없다면 
-		if (adjacent[here][there] == 0)
-			continue;
-		// 아직 방문하지 않은 곳이 있다면 방문
-		if (visited[there] == false)
-			Dfs(there);
-	}
+	//	{ 0, 1, 0, 1, 0, 0},
+	//	{ 1, 0, 1, 1, 0, 0},
+	//	{ 0, 0, 0, 0, 0, 0},
+	//	{ 0, 0, 0, 0, 1, 0},
+	//	{ 0, 0, 0, 0, 0, 0},
+	//	{ 0, 0, 0, 0, 1, 0},
+	//};
 }
 
-void DfsAll()
+void Bfs(int here)
 {
-	visited = vector<bool>(6, false);
 
+	// 누구에 의해서 발견 되었는지
+	vector<int> parent(6, -1);
+
+	// 시작점에서 얼만큼 떨어져 있는지?
+	vector<int> distance(6, -1);
+
+	// 내가 지금 발견한 순서를 저장 
+	queue<int> q;
+	q.push(here);
+	discovered[here] = true;
+
+	parent[here] = here;
+	distance[here] = 0;
+	
+	while (q.empty() == false)
+	{
+		// 다음에 방문할 정점
+		here = q.front();
+		q.pop();
+		
+		cout << "Visited : " << here << endl;
+
+		// adjacent[here] : 현재 위치와 인접한 정점
+		for (int there : adjacent[here])
+		{
+			// 이미 발견한 곳이면 return
+			if (discovered[there])
+				continue;
+
+			// 처음 발견
+			q.push(there);
+			discovered[there] = true;
+
+			// there는 here가 발견했다.
+			parent[there] = here;
+
+			// there의 거리가 here를 기준으로 1씩 늘어나기 때문
+			distance[there] = distance[here] + 1;
+		}
+	}
+
+	int a = 3;
+}
+
+void BfsAll()
+{
 	for (int i = 0; i < 6; i++)
-		if (visited[i] == false)
-			Dfs(i);
+		if (discovered[i] == false)
+			Bfs(i);
 }
 
 int main()
 {
 	CreateGraph();
-	//Dfs(0);
+	discovered = vector<bool>(6, false);
 
-	DfsAll();
+	Bfs(0);
 }
