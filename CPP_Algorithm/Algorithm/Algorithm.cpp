@@ -28,24 +28,24 @@ void CreateGraph()
 	adjacent = vector<vector<int>>(6);
 
 	// 인접 리스트
-	adjacent[0].push_back(1);
-	adjacent[0].push_back(3);
-	adjacent[1].push_back(0);
-	adjacent[1].push_back(2);
-	adjacent[1].push_back(3);
-	adjacent[3].push_back(4);
-	adjacent[5].push_back(4);
+	//adjacent[0].push_back(1);
+	//adjacent[0].push_back(3);
+	//adjacent[1].push_back(0);
+	//adjacent[1].push_back(2);
+	//adjacent[1].push_back(3);
+	//adjacent[3].push_back(4);
+	//adjacent[5].push_back(4);
 
-	// 인접 행렬
-	//adjacent = vector<vector<int>>
-	//{
-	//	{ 0, 1, 0, 1, 0, 0},
-	//	{ 1, 0, 1, 1, 0, 0},
-	//	{ 0, 0, 0, 0, 0, 0},
-	//	{ 0, 0, 0, 0, 1, 0},
-	//	{ 0, 0, 0, 0, 0, 0},
-	//	{ 0, 0, 0, 0, 1, 0},
-	//};
+	//인접 행렬
+	adjacent = vector<vector<int>>
+	{
+		{ 0, 1, 0, 1, 0, 0},
+		{ 1, 0, 1, 1, 0, 0},
+		{ 0, 0, 0, 0, 0, 0},
+		{ 0, 0, 0, 0, 1, 0},
+		{ 0, 0, 0, 0, 0, 0},
+		{ 0, 0, 0, 0, 1, 0},
+	};
 }
 
 void Bfs(int here)
@@ -74,10 +74,10 @@ void Bfs(int here)
 		cout << "Visited : " << here << endl;
 
 		// adjacent[here] : 현재 위치와 인접한 정점
-		for (int there : adjacent[here])
+		for (int there = 0; there < 6; there++)
 		{
 			// 이미 발견한 곳이면 return
-			if (discovered[there])
+			if (adjacent[here][there] == 0)
 				continue;
 
 			// 처음 발견
