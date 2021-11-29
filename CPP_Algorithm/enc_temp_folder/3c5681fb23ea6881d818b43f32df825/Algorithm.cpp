@@ -45,7 +45,7 @@ void Dijikstra(int here)
 	// 각 정점별로 지금까지 발견한 최소 거리
 	// 이전에 발견한 정점의 최소 거리와 비교를 할 수 있기 때문
 	vector<int> best(6, INT32_MAX); 
-
+	
 	// 초기화
 	discovered.push_back(VertexCost{ here, 0 });
 	best[here] = 0;
