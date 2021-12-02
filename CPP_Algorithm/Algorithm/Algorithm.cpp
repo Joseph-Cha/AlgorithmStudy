@@ -5,100 +5,97 @@
 #include <queue>
 using namespace std;
 
-// Node의 생명주기를 알아서 관리해줌 -> shared pointer
-using NodeRef = shared_ptr<struct Node>;
-
-struct Node
+template<typename T, typename Container = vector<T>, typename Predicate = less<T>>
+class PriorityQueue
 {
-	Node() { }
-	Node(const string& data) : data(data) { }
-	string			data;
-	vector<NodeRef>	children;
+public:
+	void push(const T& data)
+	{
+		// 힙 구조부터 맞춰준다.
+		_heap.push_back(data);
+
+		// 도장깨기 시작
+		int now = static_cast<int>(_heap.size()) - 1;
+
+		// 루트 노드까지 도장깨기 시도
+		while (now > 0)
+		{
+			// 부모 노드의 데이터와 비교해서 더 작으면 패배
+			int next = (now - 1) / 2; // 부모 노드를 구하는 공식
+			//if (_heap[now] < _heap[next])
+			//	break;
+			if (_predicate(_heap[now], _heap[next]))
+				break;
+			// 데이터 교체
+			::swap(_heap[now], _heap[next]);
+			now = next;
+		}
+	}
+
+	void pop()
+	{
+		_heap[0] = _heap.back();
+		_heap.pop_back();
+
+		int now = 0;
+		while (true)
+		{
+			int left = 2 * now + 1;
+			int right = 2 * now + 2;
+			
+			// 리프에 도달한 경우
+			if (left >= static_cast<int>(_heap.size()))
+				break;
+			int next = now;
+
+			// 왼쪽과 비교
+			if (_predicate(_heap[next], _heap[left]))
+				next = left;
+
+			// 둘 중 승자를 오른쪽과 비교
+			if (right < static_cast<int>(_heap.size()) && _predicate(_heap[next], _heap[right]))
+				next = right;
+
+			// 왼쪽/오른쪽 둘 다 현재 값보다 작으면 종료 => next가 어떤 값도 할당 받지 못함 
+			if (next == now)
+				break;
+
+			::swap(_heap[now], _heap[next]);
+			now = next;
+		}
+	}
+
+	T& top()
+	{
+		return _heap[0];
+	}
+
+	bool empty()
+	{
+		return _heap.empty();
+	}
+private:
+	Container _heap = {};
+	Predicate _predicate = {};
 };
-
-NodeRef CreateTree()
-{
-	NodeRef root = make_shared<Node>("R1 개발실");
-	{
-		NodeRef node = make_shared<Node>("디자인팀");
-		root->children.push_back(node);
-		{
-			NodeRef leaf = make_shared<Node>("전투");
-			node->children.push_back(leaf);
-		}
-		{
-			NodeRef leaf = make_shared<Node>("경제");
-			node->children.push_back(leaf);
-		}
-		{
-			NodeRef leaf = make_shared<Node>("스토리");
-			node->children.push_back(leaf);
-		}
-	}
-	{
-		NodeRef node = make_shared<Node>("프로그래밍팀");
-		root->children.push_back(node);
-		{
-			NodeRef leaf = make_shared<Node>("서버");
-			node->children.push_back(leaf);
-		}
-		{
-			NodeRef leaf = make_shared<Node>("클라");
-			node->children.push_back(leaf);
-		}
-		{
-			NodeRef leaf = make_shared<Node>("엔진");
-			node->children.push_back(leaf);
-		}
-	}
-	{
-		NodeRef node = make_shared<Node>("아트팀");
-		root->children.push_back(node);
-		{
-			NodeRef leaf = make_shared<Node>("배경");
-			node->children.push_back(leaf);
-		}
-		{
-			NodeRef leaf = make_shared<Node>("캐릭터");
-			node->children.push_back(leaf);
-			{
-				NodeRef leaf2 = make_shared<Node>("더미");
-				leaf->children.push_back(leaf2);
-			}
-		}
-	}
-
-	return root;
-}
-
-void PrintTree(NodeRef root, int depth)
-{
-	for (int i = 0; i < depth; i++)
-		cout << "-";
-	cout << root->data << endl;
-
-	for (NodeRef& child : root->children)
-		PrintTree(child, depth + 1);
-}
-
-// 깊이 (depth)  : 루트에서 어떤 노드에 도달하기 위해 거쳐야 하는 간선의 수 (aka. 몇 층?)
-// 높이 (height) : 가장 깊숙히 있는 노드의 깊이 (max(depth)) => 깊이들 중 가장 큰 값
-int GetHeight(NodeRef root)
-{
-	int height = 1;
-
-	for (NodeRef& child : root->children)
-		height = max(height, GetHeight(child) + 1); // 현재 자신의 높이
-
-	return height;
-}
 
 int main() 
 {
-	NodeRef root = CreateTree();
+	// greater => 작은 값이 가장 위
+	// less => 큰 값이 가장 위
+	PriorityQueue<int, vector<int>, greater<int>> pq;
 
-	PrintTree(root, 0);
+	pq.push(100);
+	pq.push(300);
+	pq.push(200);
+	pq.push(500);
+	pq.push(600);
 
-	int height = GetHeight(root);
-	cout << "Tree Height : " << height << endl;
+	while (pq.empty() == false)
+	{
+		int value = pq.top();
+		pq.pop();
+
+		cout << value << endl;
+	}
 }
