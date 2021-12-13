@@ -1,50 +1,57 @@
 #pragma once
 
-#include <Windows.h>
+#include "Types.h"
+#include <windows.h>
 #include <iostream>
 #include <vector>
-#include "Types.h"
-
+#include <queue>
+#include <map>
 using namespace std;
 
 struct Pos
 {
-    bool operator==(Pos& other)
-    {
-        return y == other.y && x == other.x;
-    }
+	bool operator==(Pos& other)
+	{
+		return y == other.y && x == other.x;
+	}
 
-    bool operator!=(Pos& other)
-    {
-        return !(*this == other);
-    }
+	bool operator!=(Pos& other)
+	{
+		return !(*this == other);
+	}
 
-    Pos operator+(Pos& other)
-    {
-        Pos result;
-        result.y = y + other.y;
-        result.x = x + other.x;
-        return result;
-    }
+	bool operator<(const Pos& other) const
+	{
+		if (y != other.y)
+			return y < other.y;
+		return x < other.x;
+	}
 
-    Pos& operator+=(Pos& other)
-    {
-        y += other.y;
-        x += other.x;
-        return *this;
-    }
+	Pos operator+(Pos& other)
+	{
+		Pos ret;
+		ret.y = y + other.y;
+		ret.x = x + other.x;
+		return ret;
+	}
 
-    int32 y = 0;
-    int32 x = 0;
+	Pos& operator+=(Pos& other)
+	{
+		y += other.y;
+		x += other.x;
+		return *this;
+	}
 
+	int32 y = 0;
+	int32 x = 0;
 };
 
 enum Dir
 {
-    DIR_UP = 0,
-    DIR_LEFT = 1,
-    DIR_DOWN = 2,
-    DIR_RIGHT = 3,
+	DIR_UP = 0,
+	DIR_LEFT = 1,
+	DIR_DOWN = 2,
+	DIR_RIGHT = 3,
 
-    DIR_COUNT = 4
+	DIR_COUNT = 4
 };
