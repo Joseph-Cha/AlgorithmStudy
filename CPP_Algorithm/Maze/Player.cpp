@@ -16,7 +16,11 @@ void Player::Init(Board* board)
 void Player::Update(uint64 deltaTick)
 {
 	if (_pathIndex >= _path.size())
+	{
+		_board->GenerateMap();
+		Init(_board);
 		return;
+	}
 
 	_sumTick += deltaTick;
 	if (_sumTick >= MOVE_TICK)
@@ -176,6 +180,7 @@ void Player::Bfs()
 
 	std::reverse(_path.begin(), _path.end());
 }
+
 struct PQNode
 {
 	bool operator<(const PQNode& other) const { return f < other.f; }
@@ -183,7 +188,7 @@ struct PQNode
 
 	int32	f; // f = g + h
 	int32	g; 
-	Pos		Pos;
+	Pos		pos;
 };
 
 void Player::AStar()
@@ -199,7 +204,9 @@ void Player::AStar()
 
 	enum
 	{
-		DIR_COUNT = 4
+		// DIR_COUNT를 8로 해주게 되면 대각선도 고려를 해서 
+		// 경로를 찾아준다.
+		DIR_COUNT = 8
 	};
 
 	Pos front[] =
@@ -246,6 +253,7 @@ void Player::AStar()
 	// 새로 발견해서 그 정점에 대한 cost를 계산해서 예약을 해준다.
 	// 그리고 루프를 돌면서 예약된 경로 중에서 가장 좋은 후보를 가지고
 	// 방문을 하게 된다.
+	// 이미 더 좋은 경로를 찾았다면 스킵
 	
 	// OpenList => 지금까지 예약된 데이터를 관리하는 자료구조
 	// 이것을 어떤 방식으로 딱히 상관은 없지만 지금은 priority_queue를 사용할 예정
@@ -254,12 +262,103 @@ void Player::AStar()
 	priority_queue<PQNode, vector<PQNode>, greater<PQNode>> pq;
 	
 	// 2) 뒤늦게 더 좋은 경로가 발견될 수 있음 -> 예외 처리 필수
+	// openList에서 찾아서 제거한다거나
+	// pq에서 pop을 한 다음에 무시한다거나
+	// 위의 둘 중 하나를 선택할 수 있다.
+	// 지금 우리 같은 경우 Priorty Queue 자체에서 최선에 해당하는 데이터를 중간에 꺼내서
+	// 조작을 하는 것은 굉장히 힘들기 때문에 설령 미리 예약된 후보가 
+	// 좋은 케이스가 아니더라도 일단을 꺼내서 
+	// closed를 이용한 방법 또는 best를 이용하는 방법을 통해 걸러주는 방법으로 구현함
 
 	// 초기값 
 	{
 		int32 g = 0;
 		// y의 거리와 x의 거리를 더한 값에 가중치 10을 둬서(cost를 10의 배수로 두었기 때문에) 계산을 해준다.
-
 		int32 h = 10 * (abs(dest.y - start.y) + abs(dest.x - start.x));
+		pq.push(PQNode{ g + h, g, start });
+		best[start.y][start.x] = g + h;
+		parent[start] = start;
 	}
+
+	while (pq.empty() == false)
+	{
+		// 제일 좋은 후보를 찾는다.
+		PQNode node = pq.top();
+		pq.pop();
+
+		// 동일한 좌표를 여러 경로로 찾아서, 
+		// 더 빠른 경로로 인해서 이미 방문(closed)된 경우 skip
+		// 이 부분을 빼면 드라군이 왔다갔다 하는 현상이 일어남
+
+		// [선택]
+		// 1) closed를 이용한 방법
+		// 해당 포지션이 closed일 때
+		// => 내가 먼저 경로를 찾아서 PQ에 넣어두었는데 
+		// => 가다보니 더 좋은 경로를 찾아서 새치기를 하는 현상이라고 이해하면 될 듯
+		if (closed[node.pos.y][node.pos.x])
+			continue;
+		// 2) best를 이용하는 방법
+		// best의 y,x 값이 현재 노드의 f값 보다 작으면 skip
+		// => 기껏 best node에 등록을 했지만 누군가가 나보다 더 좋은 값을 가지고 있다는 의미
+		if (best[node.pos.y][node.pos.x] < node.f)
+			continue;
+
+		// 방문
+		closed[node.pos.y][node.pos.x] = true;
+
+		// 목적지에 도착했으면 바로 종료
+		if (node.pos == dest)
+			break;
+		// Q) 내가 방문을 한 다음에 그 다음에 더 우수한 후보를 찾을 수 있나요?
+		// => 존재할 수가 없음
+
+		for (int32 dir = 0; dir < DIR_COUNT; dir++)
+		{
+			Pos nextPos = node.pos + front[dir];
+			
+			// 잘 수 있는 지역은 맞는지 확인 => false라면 갈 필요가 없다
+			if (CanGo(nextPos) == false)
+				continue;
+			// [선택] 이미 방문한 곳이면 스킵 => 위에서 이미 한번 걸렀기 때문에 선택
+			if (closed[nextPos.y][nextPos.x])
+				continue;
+
+			// 비용 계산
+			// node.g => 이전 우리가 nextPos를 발견하기전 이전 parent에 해당
+			// 즉 이전 좌표에서 다음 좌표로 이동하는데 드는 비용 계산
+			// h => 목적지를 기준으로 얼마만큼 떨어져 있느냐에 대한 계산 
+			// 따라서 g + h가 가장 최소가 되는 값이 가장 좋은 경우의 수
+			int32 g = node.g + cost[dir];
+			int32 h = 10 * (abs(dest.y - nextPos.y) + abs(dest.x - nextPos.x));
+			// 다른 경로에서 더 빠른 길을 찾았으면 스킵
+			if (best[nextPos.y][nextPos.x] <= g + h)
+				continue;
+
+			// 여기까지 오게 되면 내가 지금까지 찾은 경로보다
+			// 무조껀 우수한 후보이다.
+
+			// 예약 진행 
+			best[nextPos.y][nextPos.x] = g + h;
+			pq.push(PQNode{ g + h, g, nextPos });
+			parent[nextPos] = node.pos;
+		}
+	}
+
+	// 거꾸로 거슬러 올라간다
+	Pos pos = dest;
+	_path.clear();
+	_pathIndex = 0;
+
+	while (true)
+	{
+		_path.push_back(pos);
+
+		// 시작점은 자신이 곧 부모이다
+		if (pos == parent[pos])
+			break;
+
+		pos = parent[pos];
+	}
+
+	std::reverse(_path.begin(), _path.end());
 }
