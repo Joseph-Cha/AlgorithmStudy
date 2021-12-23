@@ -5,69 +5,7 @@
 #include <queue>
 using namespace std;
 
-// 오늘의 주제 : 이진 탐색 트리
-// CPP : std:::map에 해당
-// 면접에서 자주 나옴
-
-// 상황) 배열에 데이터가 있는데 정렬이 되어 있는 상태
-
-// Q) 82라는 숫자가 배열에 있습니까?
-// A) 반씩 쪼개면서 탐색을 하면 된다 => O(logN)
-// [1][8][15][23][32][44][56][63][81][91]
-
-// 업 다운 게임
-// 81
-
-// 50 -> UP (일단 중간에 있는 숫자를 불러서 나머지 절반의 가능성을 제거한다.)
-// 50 ~ 100
-
-// 정렬된 배열을 이용해서 이진 탐색 가능 (numbers[mid])
-// -- 잠깐! 그런데 배열의 단점은 뭐더라?
-// -- 중간 삽입 / 삭제가 느리다.
-// -- 따라서 중간에 데이터가 바뀌는 상황에서 배열을 이용한 탐색 트리는 아쉽게 된다.
-// -- 정렬된 연결 리스트로는 불가 (임의 접근 x)
-// 따라서 트리를 사용하는 이유는 데이터가 빈번하게 추가되고 삭제되는 경우에는 
-// 필연적으로 트리까지 가서 노드 기반으로 가서 데이터가 유동적으로 바뀔 수 있도록 해줘야 한다
-
-
-vector<int> numbers;
-
-// O(logN)
-void BinarySearch(int N)
-{
-	// 왼쪽에서 시작하는 범위와 오른쪽에서 시작하는 범위를 각각 지정
-	int left = 0;
-	int right = (int)numbers.size() - 1;
-
-	while (left <= right)
-	{
-		cout << "탐색 범위: " << left << "~" << "right" << endl;
-
-		int mid = (left + right) / 2;
-		// 반을 기준으로 왼쪽에 있다면
-		if (N < numbers[mid])
-		{
-			cout << N << " < " << numbers[mid] << endl;
-			// 오른쪽 범위는 mid에서 바로 왼쪽편으로
-			right = mid - 1;
-		}
-		// 반을 기준으로 오른쪽에 있다면
-		else if (N > numbers[mid])
-		{
-			// 왼쪽 범위는 mid에서 바로 오른편으로
-			cout << N << " > " << numbers[mid] << endl;
-			left = mid + 1;
-		}
-		else
-		{
-			cout << "찾음! " << endl;
-			break;
-		}
-	}
-}
-
 int main() 
 {
-	numbers = vector<int>{ 1, 8, 15, 23, 32, 44, 56, 63, 81, 91 };
-	BinarySearch(81);
+
 }
