@@ -4,24 +4,20 @@
 
 using namespace std;
 
+
 void BinarySearchTree::Insert(int key)
 {
 	Node* newNode = new Node();
 	newNode->key = key;
 
-	if (_root == nullptr)
-	{
-		_root = newNode;
-		return;
-	}
 	// 데이터가 추가 되었을 때 
 	// => 어디에다가 데이터를 추가해줘야하는 찾아야함
 	// => 일단 root부터 시작
 	Node* node = _root;
-	Node* parent = nullptr;
+	Node* parent = _nil;
 
 	// node가 nullptr이 아닐 때까지
-	while (node)
+	while (node != _nil)
 	{
 		parent = node;
 		if (key < node->key)
@@ -33,11 +29,87 @@ void BinarySearchTree::Insert(int key)
 	// 위 단계에서 마지막으로 검출된 node가 parent가 된다.
 	newNode->parent = parent;
 
+	if (parent == _nil)
+		_root = newNode;
 	// 현재 부모를 대상(가장 하단에 있는 node) 왼쪽인지 오른쪽인지를 결정
-	if (key < parent->key)
+	else if (key < parent->key)
 		parent->left = newNode;
 	else
 		parent->right = newNode;
+
+	// Todo 해당 노드가 레드블랙 트리 특성에 부합한지 체크
+	newNode->left = _nil;
+	newNode->right = _nil;
+	newNode->color = Color::Red;
+
+	InsertFixup(newNode);
+}
+
+void BinarySearchTree::InsertFixup(Node* node)
+{
+	// 크게 3가지 유형이 있음
+	// uncle => 부모의 형제
+	// 1) parent = Red, uncle = Red 
+	// 2) parent = Red, uncle = Black(triangle)
+	// 3) parent = Red, uncle = Black(list)
+
+	//     [pp(B)]
+	// [p(R)]	[u(?)]
+	//	   [n(R)]
+
+	// 노드의 부모가 Red라면 
+	while (node->parent->color == Color::Red)
+	{
+		// 현재 노드의 부모가 조상의 왼쪽인지
+		if (node->parent == node->parent->parent->left)
+		{
+			Node* uncle = node->parent->parent->right;
+			//     [pp(B)]
+			// [p(R)]	[u(R)]
+			//	   [n(R)]
+			if (uncle->color == Color::Red)
+			{
+				// 노드의 부모와 삼촌은 Black으로
+				// 노드의 조상은 Red로 교체
+				node->parent->color = Color::Black;
+				uncle->color = Color::Black;
+				node->parent->parent->color = Color::Red;
+
+				// 조상의 부모가 Red일 경우에 대비
+				// 이렇게 현재 노드를 노드의 조상으로 바꿔주면
+				// while문 안에서 계속 돌면서 위 과정을 반복해줌
+				node = node->parent->parent;
+			}
+
+			else
+			{
+				// triangle
+				//     [pp(B)]
+				// [p(R)]	[u(B)]
+				//	  [n(R)]
+
+
+				// 아래와 같이 triangle을 list로 펴줘야한다
+				//      [pp(B)]
+				// 	 [n(R)] [u(B)]
+				// [p(R)]
+				if (node == node->parent->right)
+				{
+
+				}
+
+				// list
+				//      [pp(B)]
+				//   [p(R)]	 [u(B)]
+				// [n(R)]
+			}
+		}
+		// 현재 노드의 부모가 조상의 오른쪽인지
+		else
+		{
+			
+		}
+	}
 }
 
 void BinarySearchTree::Delete(int key)
@@ -98,13 +170,47 @@ void BinarySearchTree::Replace(Node* u, Node* v)
 
 	delete u;
 }
+// 1번 상황
+//     [y]
+//   [x]  [3]
+// [1] [2]
 
-// 어떤 식으로 스캔을 하면서 데이터를 출력할지 결정
-// 일단 Root Node를 넣어주고 크게 3가지 순회 방법이 있음
+// 2번 상황
+//     [x]
+//  [1]   [y]
+//	    [2] [3]
 
-// 1) 전위 순회 (preorder traverse)
-// 2) 중위 순회 (inorder)
-// 3) 후위 순회 (postorder)
+// 1번 -> 2번 : RightRotate
+// 2번 -> 1번 : LeftRotate
+
+void BinarySearchTree::LeftRotate(Node* x)
+{
+	Node* y = x->right;
+
+	x->right = y->left; // [2];
+	//if ()
+	y->left->parent = x;
+}
+
+void BinarySearchTree::RightRotate(Node* y)
+{
+}
+
+enum class ConsoleColor
+{
+	BLACK = 0,
+	RED = FOREGROUND_RED,
+	GREEN = FOREGROUND_GREEN,
+	BLUE = FOREGROUND_BLUE,
+	YELLOW = RED | GREEN,
+	WHITE = RED | GREEN | BLUE,
+};
+
+void SetCursorColor(ConsoleColor color)
+{
+	HANDLE output = ::GetStdHandle(STD_OUTPUT_HANDLE);
+	::SetConsoleTextAttribute(output, static_cast<SHORT>(color));
+}
 
 void SetCursorPosition(int x, int y)
 {
@@ -113,33 +219,43 @@ void SetCursorPosition(int x, int y)
 	::SetConsoleCursorPosition(output, pos);
 }
 
+BinarySearchTree::BinarySearchTree()
+{
+	// 앞으로 leaf Node의 경우는 nullptr을 사용하는 것이 아니라
+	// nil Node를 사용할 예정
+	_nil = new Node(); // Black
+	_root = _nil;
+}
+
+BinarySearchTree::~BinarySearchTree()
+{
+	delete _nil;
+}
+
+// 어떤 식으로 스캔을 하면서 데이터를 출력할지 결정
+// 일단 Root Node를 넣어주고 크게 3가지 순회 방법이 있음
+
+// 1) 전위 순회 (preorder traverse)
+// 2) 중위 순회 (inorder)
+// 3) 후위 순회 (postorder)
+
 void BinarySearchTree::Print(Node* node, int x, int y)
 {
 	if (node == nullptr)
 		return;
 
 	SetCursorPosition(x, y);
+	if (node->color == Color::Black)
+		SetCursorColor(ConsoleColor::BLUE);
+	else
+		SetCursorColor(ConsoleColor::RED);
 
 	cout << node->key;
 	Print(node->left, x - (5 / (y + 1)), y + 1);
 	Print(node->right, x + (5 / (y + 1)), y + 1);
-}
 
-void BinarySearchTree::Print_Inorder(Node* node)
-{
-	//   [중]
-	// [좌] [우]
-	// 1) 전위 순회 => 중이 앞에 옴
-	// 2) 중위 순회 => 중이 중간에
-	// 3) 후위 순회 => 중이 마지막
-
-	if (node == nullptr)
-		return;
-
-	// 전위
-	cout << node->key << endl;
-	Print_Inorder(node->left);
-	Print_Inorder(node->right);
+	// 원상 복구를 위해서
+	SetCursorColor(ConsoleColor::WHITE);
 }
 
 // 트리구조에서 데이터를 찾는 역할
@@ -147,7 +263,7 @@ void BinarySearchTree::Print_Inorder(Node* node)
 // 어느 곳에 데이터를 넣어줄지를 찾는 과정이 필요
 Node* BinarySearchTree::Search(Node* node, int key)
 {
-	if (node == nullptr || key == node->key)
+	if (node == _nil || key == node->key)
 		return node;
 	if (key < node->key)
 		return Search(node->left, key);
@@ -155,30 +271,16 @@ Node* BinarySearchTree::Search(Node* node, int key)
 		return Search(node->right, key);
 }
 
-// 재귀함수를 사용하지 않는 버전
-Node* BinarySearchTree::Search2(Node* node, int key)
-{
-	while (node && key != node->key)
-	{
-		if (key > node->key)
-			node = node->left;
-		else
-			node = node->right;
-	}
-
-	return node;
-}
-
 Node* BinarySearchTree::Min(Node* node)
 {
-	while (node->left)
+	while (node->left != _nil)
 		node = node->left;
 	return node;
 }
 
 Node* BinarySearchTree::Max(Node* node)
 {
-	while (node->right)
+	while (node->right != _nil)
 		node = node->right;
 	return node;
 }
@@ -187,12 +289,12 @@ Node* BinarySearchTree::Max(Node* node)
 // 설명으로는 이해가 잘 안됨
 Node* BinarySearchTree::Next(Node* node)
 {
-	if (node->right)
+	if (node->right != _nil)
 		return Min(node->right);
 
 	Node* parent = node->parent;
 
-	while (parent && node == parent->right)
+	while (parent != _nil && node == parent->right)
 	{
 		node = parent;
 		parent = parent->parent;
