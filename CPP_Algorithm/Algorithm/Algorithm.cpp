@@ -3,40 +3,44 @@
 #include <list>
 #include <stack>
 #include <queue>
-#include "BinarySearchTree.h"
 using namespace std;
-#include <thread>
 
-//     [20]
-// [10]      [30]
-//         [25] [40]
-//		     [26] [50]
+// 오늘의 주제 : 정렬
+// 1) 버블 정렬 (Bubble Sort)
+void BubbleSort(vector<int>& v)
+{
+	const int n = (int)v.size();
+	// (N - 1) + (N - 2) ... 2 + 1
+	// 등차 수열의 합 = N * (N - 1) / 2
+	// O(N^2)
+	for (int i = 0; i < n - 1; i++)
+	{
+		for (int j = 0; j < (n - 1 - i); j++)
+		{
+			if (v[j] > v[j + 1])
+			{
+				int tmp = v[j];
+				v[j] = v[j + 1];
+				v[j + 1] = tmp;
+			}
+		}
+	}
+}
+
+// 2) 선택 정렬 (Selection Sort)
+
+
+
+// 3) 삽입 정렬 (Insertion Sort)
+
+
 
 int main()
 {
-	BinarySearchTree bst;
+	vector<int> v{ 1, 5, 2, 4, 7, 3 };
 
-	bst.Insert(30);
-	bst.Print();
-	this_thread::sleep_for(1s);
 
-	bst.Insert(10);
-	bst.Print();
-	this_thread::sleep_for(1s);
+	BubbleSort(v);
 
-	bst.Insert(20);
-	bst.Print();
-	this_thread::sleep_for(1s);
 
-	bst.Insert(25);
-	bst.Print();
-	this_thread::sleep_for(1s);
-
-	bst.Insert(40);
-	bst.Print();
-	this_thread::sleep_for(1s);
-
-	bst.Insert(50);
-	bst.Print();
-	this_thread::sleep_for(1s);
 }
