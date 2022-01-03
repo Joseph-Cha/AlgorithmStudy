@@ -143,7 +143,7 @@
     <ClCompile Include="BirnarySearchTree.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BirnarySearchTree.h" />
+    <ClInclude Include="BinarySearchTree.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

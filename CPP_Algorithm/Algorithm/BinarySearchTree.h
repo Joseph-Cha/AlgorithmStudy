@@ -12,7 +12,7 @@ enum class Color
 struct Node
 {
 	Node*	parent = nullptr;
-	Node*	left = nullptr;;
+	Node*	left = nullptr;
 	Node*	right = nullptr;
 	 
 	// 데이터 보관 => 차후 key & value 값으로 나눠서 보관도 가능하다.
@@ -37,7 +37,6 @@ public:
 
 	// 노드가 추가될 때 Search 기능 필요
 	Node*	Search(Node* node, int key);
-	Node*	Search2(Node* node, int key);
 
 	// root를 주고 최소값, 최대값을 찾는 함수
 	Node*	Min(Node* node);
@@ -51,14 +50,12 @@ public:
 	void	Delete(int key);
 	void	Delete(Node* node);
 	void	Replace(Node* u, Node* v);
-
 	// Red-Black Tree
-	void LeftRotate(Node* node);
-	void RightRotate(Node* node);
+	void	LeftRotate(Node* node);
+	void	RightRotate(Node* node);
 
 private:
 	Node*	_root = nullptr;
 	// 이렇게 더미 노드를 사용하면 nullptr 체크를 매번 해줄 필요가 없어진다.
 	Node*	_nil = nullptr; 
 };
-
