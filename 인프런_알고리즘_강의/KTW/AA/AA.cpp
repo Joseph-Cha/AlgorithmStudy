@@ -1,16 +1,19 @@
 ﻿/*
 문제)
-N(2<=N<=100)명의 나이가 입력됩니다. 이 N명의 사람 중 가장 나이차이가 많이 나는 경우는
-몇 살일까요? 최대 나이 차이를 출력하는 프로그램을 작성하세요.
+주민등록증의 번호가 주어지면 주민등록증 주인의 나이와 성별을 판단하여 출력하는 프로그램
+을 작성하세요. 주민등록증의 번호는 -를 기준으로 앞자리와 뒷자리로 구분된다.
+뒷자리의 첫 번째 수가 1이면 1900년대생 남자이고, 2이면 1900년대생 여자, 3이면 2000년대
+생 남자, 4이면 2000년대생 여자이다.
+올해는 2019년입니다. 해당 주민등록증 주인의 나이와 성별을 출력하세요.
 
 예시)
-10
-13 15 34 23 45 65 33 11 26 42
+780316-2376152
 
-54
+42 W
 */
 
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
@@ -19,22 +22,33 @@ int main()
 	//FILE* fp = nullptr;
 	//freopen_s(&fp, "input.txt", "rt", stdin);
 
-	int n, age = 0;
-	int max = -2000000000;
-	int min = 2000000000;
+	string num;
 
-	cin >> n;
+	cin >> num;
 
-	for (int i = 0; i < n; i++)
+	string year = num.substr(0, 2);
+
+	int age = 0;
+	stringstream ssint(year);
+	ssint >> age;
+
+	if ((22 - age) < 0)
+		cout << 22 - age + 100 << " ";
+	else
+		cout << 22 - age << " ";
+
+	char a = num[7];
+
+	int s = static_cast<int>(a) - 48;
+
+	if (s == 1 || s == 3)
 	{
-		cin >> age;
-		if (max < age)
-			max = age;
-		if (min > age)
-			min = age;
+		cout << "M";
 	}
-
-	cout << max - min;
+	else if (s == 2 || s == 4)
+	{
+		cout << "W";
+	}
 
 	return 0;
 }
