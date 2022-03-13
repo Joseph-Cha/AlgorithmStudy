@@ -1,15 +1,14 @@
 ﻿/*
 문제)
-주민등록증의 번호가 주어지면 주민등록증 주인의 나이와 성별을 판단하여 출력하는 프로그램
-을 작성하세요. 주민등록증의 번호는 -를 기준으로 앞자리와 뒷자리로 구분된다.
-뒷자리의 첫 번째 수가 1이면 1900년대생 남자이고, 2이면 1900년대생 여자, 3이면 2000년대
-생 남자, 4이면 2000년대생 여자이다.
-올해는 2019년입니다. 해당 주민등록증 주인의 나이와 성별을 출력하세요.
+현수의 컴퓨터가 바이러스에 걸려 영어단어가 뛰어쓰기와 대소문자가 혼합되어 표현된다.
+예를 들면 아름다운 이란 뜻을 가지고 있는 beautiful 단어가 “bE au T I fu L” 과 같이
+컴퓨터에 표시되고 있습니다. 위와 같이 에러로 표시되는 영어단어를 원래의 표현대로 공백을
+제거하고 소문자화 시켜 출력하는 프로그램을 작성하세요.
 
 예시)
-780316-2376152
+bE au T I fu L
 
-42 W
+beautiful
 */
 
 #include <iostream>
@@ -22,33 +21,17 @@ int main()
 	//FILE* fp = nullptr;
 	//freopen_s(&fp, "input.txt", "rt", stdin);
 
-	string num;
-
-	cin >> num;
-
-	string year = num.substr(0, 2);
-
-	int age = 0;
-	stringstream ssint(year);
-	ssint >> age;
-
-	if ((22 - age) < 0)
-		cout << 22 - age + 100 << " ";
-	else
-		cout << 22 - age << " ";
-
-	char a = num[7];
-
-	int s = static_cast<int>(a) - 48;
-
-	if (s == 1 || s == 3)
+	char word[100];
+	cin.getline(word, 100, '\n');
+	string res;
+	for (int i = 0; i < strlen(word); i++)
 	{
-		cout << "M";
+		if (word[i] == ' ')
+			continue;
+
+		res += tolower(word[i]);
 	}
-	else if (s == 2 || s == 4)
-	{
-		cout << "W";
-	}
+	cout << res;
 
 	return 0;
 }
