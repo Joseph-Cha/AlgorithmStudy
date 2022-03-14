@@ -1,14 +1,12 @@
 ﻿/*
 문제)
-현수의 컴퓨터가 바이러스에 걸려 영어단어가 뛰어쓰기와 대소문자가 혼합되어 표현된다.
-예를 들면 아름다운 이란 뜻을 가지고 있는 beautiful 단어가 “bE au T I fu L” 과 같이
-컴퓨터에 표시되고 있습니다. 위와 같이 에러로 표시되는 영어단어를 원래의 표현대로 공백을
-제거하고 소문자화 시켜 출력하는 프로그램을 작성하세요.
+괄호가 입력되면 올바른 괄호이면 “YES", 올바르지 않으면 ”NO"를 출력합니다.
+(())() 이것은 괄호의 쌍이 올바르게 위치하는 거지만, (()()))은 올바른 괄호가 아니다.
 
 예시)
-bE au T I fu L
+(()(()))(()
 
-beautiful
+NO
 */
 
 #include <iostream>
@@ -21,17 +19,27 @@ int main()
 	//FILE* fp = nullptr;
 	//freopen_s(&fp, "input.txt", "rt", stdin);
 
-	char word[100];
-	cin.getline(word, 100, '\n');
-	string res;
-	for (int i = 0; i < strlen(word); i++)
+	char word[30];
+	cin >> word;
+	int a = 0, b = 0;
+	bool success = false;
+	if (word[0] != '(' || word[strlen(word) - 1] != ')')
 	{
-		if (word[i] == ' ')
-			continue;
-
-		res += tolower(word[i]);
+		success = false;
+		cout << "NO";
+		return 0;
 	}
-	cout << res;
 
+	for (int i = 0; word[i] != '\0'; i++)
+	{
+		if (word[i] == '(')
+			a++;
+		else
+			b++;
+		if (a == b) success = true;
+		else success = false;
+	}
+
+	success ? cout << "YES" : cout << "NO";
 	return 0;
 }
