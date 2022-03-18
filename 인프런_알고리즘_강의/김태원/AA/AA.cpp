@@ -10,38 +10,14 @@ int main()
 
 	int n;
 	cin >> n;
-	vector<int> a;
-	a.resize(n);
-
-	for (int i = 0; i < n; i++)
-	{
-		cin >> a[i];
-	}
-	int max_sum = -1000000;
-	int result = 0;
-	for (int i = 0; i < n; i++)
-	{
-		int pre = a[i];
-		int sum = 0;
-		while (a[i] > 0)
-		{
-			int b = a[i] % 10;
-			sum += b;
-			a[i] = a[i] / 10;
-		}
-		if (max_sum < sum)
-		{
-			max_sum = sum;
-			result = pre;
-		}
-		else if (max_sum == sum)
-		{
-			if (result < pre)
-				result = pre;
+	int count = 0;
+	for (int i = 1; i <= n; i++) {
+		int a = i;
+		while (a > 0) {
+			a = a / 10;
+			count++;
 		}
 	}
-
-	cout << result;
-
+	cout << count;
 	return 0;
 }
