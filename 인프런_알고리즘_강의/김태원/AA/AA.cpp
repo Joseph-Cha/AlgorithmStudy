@@ -1,4 +1,7 @@
-﻿#include <iostream>
+﻿// 10 ~ 15 = 15 - 10 + 1
+// 100 150 = 150 - 100 + 1
+
+#include <iostream>
 #include <vector>
 
 using namespace std;
@@ -11,13 +14,19 @@ int main()
 	int n;
 	cin >> n;
 	int count = 0;
-	for (int i = 1; i <= n; i++) {
-		int a = i;
-		while (a > 0) {
-			a = a / 10;
-			count++;
-		}
+	int temp = n;
+	while (n > 0) {
+		n = n / 10;
+		count++;
 	}
-	cout << count;
+	long long sum = 0;
+	for (int i = 1; i <= count - 1; i++) {
+		sum += i * (9 * (pow(10, i - 1)));
+	}
+
+	int a = (temp - pow(10, count - 1) + 1);
+	sum += a * count;
+
+	cout << sum;
 	return 0;
 }
