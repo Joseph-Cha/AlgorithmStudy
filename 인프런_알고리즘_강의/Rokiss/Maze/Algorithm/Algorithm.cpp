@@ -9,43 +9,43 @@ using namespace std;
 // 1) 버블 정렬 (Bubble Sort)
 void BubbleSort(vector<int>& v)
 {
-	const int n = (int)v.size();
-	// (N - 1) + (N - 2) ... 2 + 1
-	// 등차 수열의 합 = N * (N - 1) / 2
-	// O(N^2)
-	for (int i = 0; i < n - 1; i++)
-	{
-		for (int j = 0; j < (n - 1 - i); j++)
-		{
-			if (v[j] > v[j + 1])
-			{
-				int tmp = v[j];
-				v[j] = v[j + 1];
-				v[j + 1] = tmp;
-			}
-		}
-	}
+    const int n = (int)v.size();
+    // (N - 1) + (N - 2) ... 2 + 1
+    // 등차 수열의 합 = N * (N - 1) / 2
+    // O(N^2)
+    for (int i = 0; i < n - 1; i++)
+    {
+        for (int j = 0; j < (n - 1 - i); j++)
+        {
+            if (v[j] > v[j + 1])
+            {
+                int tmp = v[j];
+                v[j] = v[j + 1];
+                v[j + 1] = tmp;
+            }
+        }
+    }
 }
 
 // 2) 선택 정렬 (Selection Sort)
 void SelectionSort(vector<int>& v)
 {
-	const int n = (int)v.size();
+    const int n = (int)v.size();
 
-	// O(N^2)
-	for (int i = 0; i < n - 1; i++)
-	{
-		int bestIdx = i;
-		for (int j = i + 1; j < n; j++)
-		{
-			if (v[j] < v[bestIdx])
-				bestIdx = j;
-		}
-		// 교환
-		int tmp = v[i];
-		v[i] = v[bestIdx];
-		v[bestIdx] = tmp;
-	}
+    // O(N^2)
+    for (int i = 0; i < n - 1; i++)
+    {
+        int bestIdx = i;
+        for (int j = i + 1; j < n; j++)
+        {
+            if (v[j] < v[bestIdx])
+                bestIdx = j;
+        }
+        // 교환
+        int tmp = v[i];
+        v[i] = v[bestIdx];
+        v[bestIdx] = tmp;
+    }
 }
 
 // 3) 삽입 정렬 (Insertion Sort)
@@ -58,36 +58,36 @@ void SelectionSort(vector<int>& v)
 // vector를 하나 새로 만들어야하는 것까지는 아니다.
 void InsertSort(vector<int>& v)
 {
-	const int n = (int)v.size();
-	// O(N^2)
-	for (int i = 1; i < n; i++)
-	{
-		// 삽입을 해야할 데이터
-		int insertData = v[i];
-		
-		// 어느 위치에 삽입을 해야하는지 체크
-		int j;
+    const int n = (int)v.size();
+    // O(N^2)
+    for (int i = 1; i < n; i++)
+    {
+        // 삽입을 해야할 데이터
+        int insertData = v[i];
+        
+        // 어느 위치에 삽입을 해야하는지 체크
+        int j;
 
-		// 끝에서부터 역순서로 하나씩 체크
-		for (j = i - 1; j >= 0; j--)
-		{
-			// 삽입을 해야하는 데이터가 j에 있는 데이터보다 작으면
-			// => i보다 왼쪽 편에 있는 데이터들을 하나씩 체크하면서 이전에 있는 데이터를 오른쪽으로 이동시켜준다.
-			if (v[j] > insertData)
-				v[j + 1] = v[j];
-			else
-				break;
-		}
-		// 삽입을 해야할 위치에 insertData를 넣어준다.
-		v[j + 1] = insertData;
-	}
+        // 끝에서부터 역순서로 하나씩 체크
+        for (j = i - 1; j >= 0; j--)
+        {
+            // 삽입을 해야하는 데이터가 j에 있는 데이터보다 작으면
+            // => i보다 왼쪽 편에 있는 데이터들을 하나씩 체크하면서 이전에 있는 데이터를 오른쪽으로 이동시켜준다.
+            if (v[j] > insertData)
+                v[j + 1] = v[j];
+            else
+                break;
+        }
+        // 삽입을 해야할 위치에 insertData를 넣어준다.
+        v[j + 1] = insertData;
+    }
 }
 
 int main()
 {
-	vector<int> v{ 1, 5, 2, 4, 7, 3 };
+    vector<int> v{ 1, 5, 2, 4, 7, 3 };
 
-	//BubbleSort(v);
-	SelectionSort(v);
+    //BubbleSort(v);
+    SelectionSort(v);
 
 }
