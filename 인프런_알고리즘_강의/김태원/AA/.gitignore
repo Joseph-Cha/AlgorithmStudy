@@ -33,6 +33,7 @@
 
 Debug/
 .vs/
+x64/
 
 *.sln
 *.vcxproj
